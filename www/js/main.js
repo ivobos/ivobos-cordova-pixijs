@@ -6,16 +6,6 @@ var ivobos_20160125_fullwindow_main = (function() {
     renderer.autoResize = true;
     renderer.resize(window.innerWidth, window.innerHeight);
 
-    window.addEventListener("resize", function(event){
-        var w = window.innerWidth;    
-        var h = window.innerHeight;    
-        //this part resizes the canvas but keeps ratio the same    
-        renderer.view.style.width = w + "px";    
-        renderer.view.style.height = h + "px";    
-        //this part adjusts the ratio:    
-        renderer.resize(w,h);
-    });
-
     document.body.appendChild(renderer.view);
 
     var stage = new PIXI.Container();
@@ -27,6 +17,17 @@ var ivobos_20160125_fullwindow_main = (function() {
     var tileSprite;
     var count = 0;
     var fpsText;
+
+    window.addEventListener("resize", function(event){
+        var w = window.innerWidth;    
+        var h = window.innerHeight;    
+        //this part resizes the canvas but keeps ratio the same    
+        renderer.view.style.width = w + "px";    
+        renderer.view.style.height = h + "px";    
+        //this part adjusts the ratio:    
+        renderer.resize(w,h);
+        tileSprite
+    });
 
     function setup() {
         var tileTexture = PIXI.loader.resources["img/download.jpeg"].texture;
