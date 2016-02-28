@@ -1,8 +1,23 @@
 var ivobos_panelPacker = (function() {
     var panelPacker = {};
 
+    panelPacker.pack = function(display_w, display_h, blocks) {
+        var display_whratio = display_w / display_h;
+        var result = this.packToRatio(display_whratio, blocks);
+        // scale up to screen dimentions
+        var scaleUp = Math.min(display_w / result.w, display_h / result.h)
+        result.w *= scaleUp;
+        result.h *= scaleUp;
+        for (n = 0; n < result.blocks.length; n++) {
+            result.blocks[n].x *= scaleUp;
+            result.blocks[n].y *= scaleUp;
+            result.blocks[n].w *= scaleUp;
+            result.blocks[n].h *= scaleUp;
+        }
+        return result;
+    }
     
-    panelPacker.pack = function (whratio, blocks) {
+    panelPacker.packToRatio = function (whratio, blocks) {
         var area = 0;
         for (n = 0; n < blocks.length; n++) {
             area += blocks[n].w * blocks[n].h;

@@ -10,14 +10,14 @@ var ivobos_20160125_fullwindow_main = (function() {
 
     var stage = new PIXI.Container();
 
-    PIXI.loader
-        .add("img/download.jpeg")
-        .load(setup);
-
-    var tileSprite;
+    var tileSprites = [
+        { img: "img/download.jpeg", w: 6, h: 6},
+        { img: "img/logo.png", w: 3, h: 2},
+        { img: "img/lines.png", w: 2, h: 3}
+    ];
     var count = 0;
     var fpsText;
-
+    
     window.addEventListener("resize", function(event){
         var w = window.innerWidth;    
         var h = window.innerHeight;    
@@ -26,15 +26,38 @@ var ivobos_20160125_fullwindow_main = (function() {
         renderer.view.style.height = h + "px";    
         //this part adjusts the ratio:    
         renderer.resize(w,h);
-        tileSprite
+        resizeSprites();
     });
 
+    // load images and start
+    var loader = PIXI.loader;
+    for (var n = 0; n < tileSprites.length; n++) {
+        loader.add(tileSprites[n].img);
+    }
+    loader.load(setup);
+
+    function resizeSprites() {
+        // arrange sprites on screen
+        var packResult = ivobos_panelPacker.pack(renderer.width, renderer.height, tileSprites)
+        for (var n = 0; n < tileSprites.length; n++) {
+            tileSprites[n].sprite.width = packResult.blocks[n].w;
+            tileSprites[n].sprite.height = packResult.blocks[n].h;            
+            tileSprites[n].sprite.x = packResult.blocks[n].x;
+            tileSprites[n].sprite.y = packResult.blocks[n].y;
+        }        
+    }
+    
     function setup() {
-        var tileTexture = PIXI.loader.resources["img/download.jpeg"].texture;
-        tileSprite = new PIXI.extras.TilingSprite(tileTexture, renderer.width, renderer.height);
-        stage.addChild(tileSprite);
+        // create sprites
+        for (var n = 0; n < tileSprites.length; n++) {
+            var tileTexture = PIXI.loader.resources[tileSprites[n].img].texture;
+            tileSprites[n].sprite = new PIXI.extras.TilingSprite(tileTexture);
+            stage.addChild(tileSprites[n].sprite);
+        } 
+        // FPS display
         fpsText = new PIXI.Text('FPS',{font : '14px Arial', fill : 0xf0f0f0, align : 'center'});
         stage.addChild(fpsText);
+        resizeSprites();
         animate();
     }
 
@@ -51,11 +74,13 @@ var ivobos_20160125_fullwindow_main = (function() {
 
         count += 0.005;
 
-        tileSprite.tileScale.x = 1 + Math.sin(count) / 10;
-        tileSprite.tileScale.y = 1 + Math.sin(count) / 10;
+        for (var n = 0; n < tileSprites.length; n++) {
+            tileSprites[n].sprite.tileScale.x = 1 + Math.sin(count) / 10;
+            tileSprites[n].sprite.tileScale.y = 1 + Math.sin(count) / 10;
 
-        tileSprite.tilePosition.x = 100 * Math.sin(count);
-        tileSprite.tilePosition.y = 100 * count;
+            tileSprites[n].sprite.tilePosition.x = 100 * Math.sin(count);
+            tileSprites[n].sprite.tilePosition.y = 100 * count;
+        }
 
         // render the root container
         renderer.render(stage);
