@@ -1,18 +1,45 @@
+// this is broken, don't use!!
+
 var ivobos_panelPacker = (function() {
     var panelPacker = {};
 
     panelPacker.pack = function(display_w, display_h, blocks) {
+        console.log("panelPacker.pack("+display_w+","+display_h+",[");
+        for (var n = 0; n < blocks.length; n++) {
+            console.log(" { w : " + blocks[n].w + ", h : " + blocks[n].h + "},");
+        }
+        console.log("])");
+   //     console.log("panelPacker.pack("); //+display_w+","+display_h+","+blocks+")");
         var display_whratio = display_w / display_h;
+
         var result = this.packToRatio(display_whratio, blocks);
+        return result;
         // scale up to screen dimentions
         var scaleUp = Math.min(display_w / result.w, display_h / result.h)
         result.w *= scaleUp;
         result.h *= scaleUp;
-        for (n = 0; n < result.blocks.length; n++) {
+        for (var n = 0; n < result.blocks.length; n++) {
             result.blocks[n].x *= scaleUp;
             result.blocks[n].y *= scaleUp;
             result.blocks[n].w *= scaleUp;
             result.blocks[n].h *= scaleUp;
+        }
+        return result;
+    }
+    
+    // given a container and a block
+    // return the block expanded in the container
+    panelPacker.expandToFit = function(container, block) {
+        var result = {};
+        var block_whratio = block.w / block.h;
+        if (container.w / block_whratio > container.h) {
+            // expand to maximum height
+            result.w = container.h * block_whratio;
+            result.h = container.h;
+        } else {
+            // expand to maximum width
+            result.w = container.w;
+            result.h = container.w / block_whratio;
         }
         return result;
     }
@@ -48,7 +75,7 @@ var ivobos_panelPacker = (function() {
         for (n = 0; n < blocks.length; n++) {
             block = blocks[n];
             if (node = this.findNode(root, block.w, block.h)) {
-                this.splitNode(node, block.w, block.h);
+                this.splitNode(node, block.w, block.h, false);
                 result.blocks[n] = {
                     x: node.x,
                     y: node.y,
@@ -73,10 +100,27 @@ var ivobos_panelPacker = (function() {
             return null;
     }
     
-    panelPacker.splitNode = function(node, w, h) {
+    panelPacker.splitNode = function(node, w, h, expand) {
+        var block;
+        if (expand) {
+            block = this.expandToFit(node, {w:w, h:h});
+        } else {
+            block = { w: w, h:h };
+        }
         node.used = true;
-        node.down  = { x: node.x,     y: node.y + h, w: node.w,     h: node.h - h };
-        node.right = { x: node.x + w, y: node.y,     w: node.w - w, h: h          };
+        node.w = block.w;
+        node.h = block.h;
+        var bigDown  =      { x: node.x,                y: node.y + block.h,  w: node.w,               h: node.h - block.h };
+        var smallDown =     { x: node.x,                y: node.y + block.h,  w: block.w,           h: node.h - block.h };
+        var smallRight =    { x: node.x + block.w,   y: node.y,               w: node.w - block.w,  h: block.h          };
+        var bigRight =      { x: node.x + block.w,   y: node.y,               w: node.w - block.w,  h: node.h          };        
+        if (smallDown.w * smallDown.h > bigRight.h * bigRight.h || bigDown.w * bigDown.h > bigRight.w * bigRight.h) {
+            node.down = bigDown;
+            node.right = smallRight;
+        } else {
+            node.down = smallDown;
+            node.right = bigRight;
+        }
         return node;
     }
     

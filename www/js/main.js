@@ -38,12 +38,18 @@ var ivobos_20160125_fullwindow_main = (function() {
 
     function resizeSprites() {
         // arrange sprites on screen
-        var packResult = ivobos_panelPacker.pack(renderer.width, renderer.height, tileSprites)
+        var container = { x: 0, y: 0, w: renderer.width, h: renderer.height};
+        var layout = [
+            { w: 4, h: 4 },
+            { w: 2, h: 2 },
+            { w: 2, h: 2 }            
+        ];
+        var packResult = ivobos_panelPacker2.pack(container, layout);
         for (var n = 0; n < tileSprites.length; n++) {
-            tileSprites[n].sprite.width = packResult.blocks[n].w;
-            tileSprites[n].sprite.height = packResult.blocks[n].h;            
-            tileSprites[n].sprite.x = packResult.blocks[n].x;
-            tileSprites[n].sprite.y = packResult.blocks[n].y;
+            tileSprites[n].sprite.width = packResult[n].w;
+            tileSprites[n].sprite.height = packResult[n].h;            
+            tileSprites[n].sprite.x = packResult[n].x;
+            tileSprites[n].sprite.y = packResult[n].y;
         }        
     }
     

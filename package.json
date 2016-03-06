@@ -1,0 +1,31 @@
+{
+  "name": "ivobos-cordova-pixijs",
+  "version": "1.0.0",
+  "description": "cordova pixijs test",
+  "main": "node.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"no tests specified\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ivobos/ivobos-cordova-pixijs.git"
+  },
+  "keywords": [
+    "cordova",
+    "pixijs",
+    "ivobos"
+  ],
+  "author": "Ivo Bosticky",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ivobos/ivobos-cordova-pixijs/issues"
+  },
+  "homepage": "https://github.com/ivobos/ivobos-cordova-pixijs#readme",
+  "dependencies": {
+    "jquery": "^2.2.1",
+    "qunit": "^0.9.0"
+  }
+}
